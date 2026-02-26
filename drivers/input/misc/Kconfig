@@ -961,5 +961,6 @@ config INPUT_STPMIC1_ONKEY
 
 source "drivers/input/misc/cs40l26_haptic/Kconfig"
 source "drivers/input/misc/si_haptic/Kconfig"
+source "drivers/input/misc/aw86927_haptic/Kconfig"
 
 endif
