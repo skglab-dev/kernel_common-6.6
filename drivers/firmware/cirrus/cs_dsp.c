@@ -807,8 +807,6 @@ int cs_dsp_coeff_write_ctrl(struct cs_dsp_coeff_ctl *ctl,
 	} else if (buf != ctl->cache) {
 		if (memcmp(ctl->cache + off * sizeof(u32), buf, len))
 			memcpy(ctl->cache + off * sizeof(u32), buf, len);
-		else
-			return 0;
 	}
 
 	ctl->set = 1;
@@ -818,7 +816,7 @@ int cs_dsp_coeff_write_ctrl(struct cs_dsp_coeff_ctl *ctl,
 	if (ret < 0)
 		return ret;
 
-	return 1;
+	return ret;
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_coeff_write_ctrl, FW_CS_DSP);
 
@@ -845,7 +843,7 @@ static int cs_dsp_coeff_read_ctrl_raw(struct cs_dsp_coeff_ctl *ctl,
 		kfree(scratch);
 		return ret;
 	}
-	cs_dsp_dbg(dsp, "Read %zu bytes from %x\n", len, reg);
+	cs_dsp_dbg(dsp, "Read %zu bytes from %x result:buf[0]:0x%08x\n", len, reg, *(int*)scratch);
 
 	memcpy(buf, scratch, len);
 	kfree(scratch);
@@ -2109,7 +2107,7 @@ out:
 	return ret;
 }
 
-static int cs_dsp_load_coeff(struct cs_dsp *dsp, const struct firmware *firmware,
+int cs_dsp_load_coeff(struct cs_dsp *dsp, const struct firmware *firmware,
 			     const char *file)
 {
 	LIST_HEAD(buf_list);
@@ -2310,6 +2308,7 @@ out_fw:
 
 	return ret;
 }
+EXPORT_SYMBOL_GPL(cs_dsp_load_coeff);
 
 static int cs_dsp_create_name(struct cs_dsp *dsp)
 {
