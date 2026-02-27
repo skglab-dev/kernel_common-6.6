@@ -85,8 +85,16 @@ static struct vm_area_struct *uffd_lock_vma(struct mm_struct *mm,
 
 	mmap_read_lock(mm);
 	vma = find_vma_and_prepare_anon(mm, address);
-	if (!IS_ERR(vma))
-		vma_start_read_locked(vma);
+	if (!IS_ERR(vma)) {
+		/*
+		 * We cannot use vma_start_read() as it may fail due to
+		 * false locked (see comment in vma_start_read()). We
+		 * can avoid that by directly locking vm_lock under
+		 * mmap_lock, which guarantees that nobody can lock the
+		 * vma for write (vma_start_write()) under us.
+		 */
+		down_read(&vma->vm_lock->lock);
+	}
 
 	mmap_read_unlock(mm);
 	return vma;
@@ -1021,8 +1029,7 @@ void double_pt_unlock(spinlock_t *ptl1,
  */
 static struct folio *check_ptes_for_batched_move(struct vm_area_struct *src_vma,
 						 unsigned long src_addr,
-						 pte_t *src_pte, pte_t *dst_pte,
-						 struct anon_vma *src_anon_vma)
+						 pte_t *src_pte, pte_t *dst_pte)
 {
 	pte_t orig_dst_pte, orig_src_pte;
 	struct folio *folio;
@@ -1038,8 +1045,7 @@ static struct folio *check_ptes_for_batched_move(struct vm_area_struct *src_vma,
 	folio = vm_normal_folio(src_vma, src_addr, orig_src_pte);
 	if (!folio || !folio_trylock(folio))
 		return NULL;
-	if (!PageAnonExclusive(&folio->page) || folio_test_large(folio) ||
-	    folio_anon_vma(folio) != src_anon_vma) {
+	if (!PageAnonExclusive(&folio->page) || folio_test_large(folio)) {
 		folio_unlock(folio);
 		return NULL;
 	}
@@ -1047,9 +1053,8 @@ static struct folio *check_ptes_for_batched_move(struct vm_area_struct *src_vma,
 }
 
 /*
- * Moves src folios to dst in a batch as long as they share the same
- * anon_vma as the first folio, are not large, and can successfully
- * take the lock via folio_trylock().
+ * Moves src folios to dst in a batch as long as they are not large, and can
+ * successfully take the lock via folio_trylock().
  */
 static long move_present_ptes(struct mm_struct *mm,
 			      struct vm_area_struct *dst_vma,
@@ -1058,8 +1063,7 @@ static long move_present_ptes(struct mm_struct *mm,
 			      pte_t *dst_pte, pte_t *src_pte,
 			      pte_t orig_dst_pte, pte_t orig_src_pte,
 			      spinlock_t *dst_ptl, spinlock_t *src_ptl,
-			      struct folio **first_src_folio, unsigned long len,
-			      struct anon_vma *src_anon_vma)
+			      struct folio **first_src_folio, unsigned long len)
 {
 	int err = 0;
 	struct folio *src_folio = *first_src_folio;
@@ -1117,8 +1121,8 @@ static long move_present_ptes(struct mm_struct *mm,
 		src_pte++;
 
 		folio_unlock(src_folio);
-		src_folio = check_ptes_for_batched_move(src_vma, src_addr, src_pte,
-							dst_pte, src_anon_vma);
+		src_folio = check_ptes_for_batched_move(src_vma, src_addr,
+							src_pte, dst_pte);
 		if (!src_folio)
 			break;
 	}
@@ -1391,33 +1395,11 @@ retry:
 			goto retry;
 		}
 
-		if (!src_anon_vma) {
-			/*
-			 * folio_referenced walks the anon_vma chain
-			 * without the folio lock. Serialize against it with
-			 * the anon_vma lock, the folio lock is not enough.
-			 */
-			src_anon_vma = folio_get_anon_vma(src_folio);
-			if (!src_anon_vma) {
-				/* page was unmapped from under us */
-				ret = -EAGAIN;
-				goto out;
-			}
-			if (!anon_vma_trylock_write(src_anon_vma)) {
-				pte_unmap(src_pte);
-				pte_unmap(dst_pte);
-				src_pte = dst_pte = NULL;
-				/* now we can block and wait */
-				anon_vma_lock_write(src_anon_vma);
-				goto retry;
-			}
-		}
-
 		ret = move_present_ptes(mm, dst_vma, src_vma,
 					dst_addr, src_addr, dst_pte, src_pte,
 					orig_dst_pte, orig_src_pte,
 					dst_ptl, src_ptl, &src_folio,
-					len, src_anon_vma);
+					len);
 	} else {
 		struct folio *folio = NULL;
 
@@ -1637,10 +1619,14 @@ static int uffd_move_lock(struct mm_struct *mm,
 	mmap_read_lock(mm);
 	err = find_vmas_mm_locked(mm, dst_start, src_start, dst_vmap, src_vmap);
 	if (!err) {
-		vma_start_read_locked(*dst_vmap);
+		/*
+		 * See comment in uffd_lock_vma() as to why not using
+		 * vma_start_read() here.
+		 */
+		down_read(&(*dst_vmap)->vm_lock->lock);
 		if (*dst_vmap != *src_vmap)
-			vma_start_read_locked_nested(*src_vmap,
-						SINGLE_DEPTH_NESTING);
+			down_read_nested(&(*src_vmap)->vm_lock->lock,
+					 SINGLE_DEPTH_NESTING);
 	}
 	mmap_read_unlock(mm);
 	return err;
