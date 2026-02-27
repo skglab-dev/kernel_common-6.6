@@ -1013,6 +1013,99 @@ ifneq ($(CONFIG_FUNCTION_ALIGNMENT),0)
 KBUILD_CFLAGS += -falign-functions=$(CONFIG_FUNCTION_ALIGNMENT)
 endif
 
+# disable warning -Wempty-body
+KBUILD_CFLAGS += $(call cc-disable-warning, empty-body)
+
+# disable warning -Wfortify-source
+KBUILD_CFLAGS += $(call cc-disable-warning, fortify-source)
+
+# disable warning -Wignored-attributes
+KBUILD_CFLAGS += $(call cc-disable-warning, ignored-attributes)
+
+# disable warning -Wincompatible-pointer-types
+KBUILD_CFLAGS += $(call cc-disable-warning, incompatible-pointer-types)
+
+# disable warning -Wimplicit-int
+KBUILD_CFLAGS += $(call cc-disable-warning, implicit-int)
+
+# disable warning -Wimplicit-enum-enum-cast
+KBUILD_CFLAGS += $(call cc-disable-warning, implicit-enum-enum-cast)
+
+# disable warning -Wint-conversion
+KBUILD_CFLAGS += $(call cc-disable-warning, int-conversion)
+
+# disable warning -Wstrict-prototypes
+KBUILD_CFLAGS += $(call cc-disable-warning, strict-prototypes)
+
+# disable warning -Wmisleading-indentation
+KBUILD_CFLAGS += $(call cc-disable-warning, misleading-indentation)
+
+# disable warning -Wnon-literal-null-conversion
+KBUILD_CFLAGS += $(call cc-disable-warning, non-literal-null-conversion)
+
+# disable warning -Wparentheses-equality
+KBUILD_CFLAGS += $(call cc-disable-warning, parentheses-equality)
+
+# disable warning -Wpointer-bool-conversion
+KBUILD_CFLAGS += $(call cc-disable-warning, pointer-bool-conversion)
+
+# disable warning -Wpointer-integer-compare
+KBUILD_CFLAGS += $(call cc-disable-warning, pointer-integer-compare)
+
+# disable warning -Wpointer-to-int-cast
+KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-int-cast)
+
+# disable warning -Wunused-but-set-variable
+KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
+
+# disable warning -Wunused-function
+KBUILD_CFLAGS += $(call cc-disable-warning, unused-function)
+
+# disable warning -Wunused-variable
+KBUILD_CFLAGS += $(call cc-disable-warning, unused-variable)
+
+# disable warning -Wunused-result
+KBUILD_CFLAGS += $(call cc-disable-warning, unused-result)
+
+# disable warning -Wuninitialized
+KBUILD_CFLAGS += $(call cc-disable-warning, uninitialized)
+
+# disable warning -Wframe-larger-than
+KBUILD_CFLAGS += $(call cc-disable-warning, frame-larger-than)
+
+# disable -Wstrict-prototypes
+KBUILD_CFLAGS += $(call cc-option, -Wno-error=strict-prototypes)
+
+# disable -Wimplicit-function-declaration
+KBUILD_CFLAGS += $(call cc-option, -Wno-error=implicit-function-declaration)
+
+# disable -Wincompatible-function-pointer-types
+KBUILD_CFLAGS   += $(call cc-option,-Wno-error=incompatible-pointer-types)
+
+# disable -Wimplicit-int
+KBUILD_CFLAGS += $(call cc-option, -Wno-error=implicit-int)
+
+# disable -Wimplicit-enum-enum-cast
+KBUILD_CFLAGS += $(call cc-option, -Wno-error=implicit-enum-enum-cast)
+
+# disable -Wunused-but-set-variable
+KBUILD_CFLAGS += $(call cc-option, -Wno-error=unused-but-set-variable)
+
+# disable -Wunused-function
+KBUILD_CFLAGS += $(call cc-option, -Wno-error=unused-function)
+
+# disable -Wunused-variable
+KBUILD_CFLAGS += $(call cc-option, -Wno-error=unused-variable)
+
+# disable -Wunused-result
+KBUILD_CFLAGS += $(call cc-option, -Wno-error=unused-result)
+
+# disable -Wuninitialized
+KBUILD_CFLAGS += $(call cc-option, -Wno-error=uninitialized)
+
+# disable -Wframe-larger-than
+KBUILD_CFLAGS += $(call cc-option, -Wno-error=frame-larger-than)
+
 # arch Makefile may override CC so keep this after arch Makefile is included
 NOSTDINC_FLAGS += -nostdinc
 
