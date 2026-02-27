@@ -85,16 +85,8 @@ static struct vm_area_struct *uffd_lock_vma(struct mm_struct *mm,
 
 	mmap_read_lock(mm);
 	vma = find_vma_and_prepare_anon(mm, address);
-	if (!IS_ERR(vma)) {
-		/*
-		 * We cannot use vma_start_read() as it may fail due to
-		 * false locked (see comment in vma_start_read()). We
-		 * can avoid that by directly locking vm_lock under
-		 * mmap_lock, which guarantees that nobody can lock the
-		 * vma for write (vma_start_write()) under us.
-		 */
-		down_read(&vma->vm_lock->lock);
-	}
+	if (!IS_ERR(vma))
+		vma_start_read_locked(vma);
 
 	mmap_read_unlock(mm);
 	return vma;
@@ -1253,7 +1245,6 @@ static long move_pages_ptes(struct mm_struct *mm, pmd_t *dst_pmd, pmd_t *src_pmd
 	pte_t *dst_pte = NULL;
 
 	struct folio *src_folio = NULL;
-	struct anon_vma *src_anon_vma = NULL;
 	struct mmu_notifier_range range;
 	long ret = 0;
 
@@ -1324,9 +1315,9 @@ retry:
 		}
 
 		/*
-		 * Pin and lock both source folio and anon_vma. Since we are in
-		 * RCU read section, we can't block, so on contention have to
-		 * unmap the ptes, obtain the lock and retry.
+		 * Pin and lock source folio. Since we are in RCU read section,
+		 * we can't block, so on contention have to unmap the ptes,
+		 * obtain the lock and retry.
 		 */
 		if (!src_folio) {
 			struct folio *folio;
@@ -1493,10 +1484,6 @@ retry:
 	}
 
 out:
-	if (src_anon_vma) {
-		anon_vma_unlock_write(src_anon_vma);
-		put_anon_vma(src_anon_vma);
-	}
 	if (src_folio) {
 		folio_unlock(src_folio);
 		folio_put(src_folio);
@@ -1650,14 +1637,10 @@ static int uffd_move_lock(struct mm_struct *mm,
 	mmap_read_lock(mm);
 	err = find_vmas_mm_locked(mm, dst_start, src_start, dst_vmap, src_vmap);
 	if (!err) {
-		/*
-		 * See comment in uffd_lock_vma() as to why not using
-		 * vma_start_read() here.
-		 */
-		down_read(&(*dst_vmap)->vm_lock->lock);
+		vma_start_read_locked(*dst_vmap);
 		if (*dst_vmap != *src_vmap)
-			down_read_nested(&(*src_vmap)->vm_lock->lock,
-					 SINGLE_DEPTH_NESTING);
+			vma_start_read_locked_nested(*src_vmap,
+						SINGLE_DEPTH_NESTING);
 	}
 	mmap_read_unlock(mm);
 	return err;
@@ -1762,15 +1745,6 @@ static void uffd_move_unlock(struct vm_area_struct *dst_vma,
  * virtual regions without knowing if there are transparent hugepage
  * in the regions or not, but preventing the risk of having to split
  * the hugepmd during the remap.
- *
- * If there's any rmap walk that is taking the anon_vma locks without
- * first obtaining the folio lock (the only current instance is
- * folio_referenced), they will have to verify if the folio->mapping
- * has changed after taking the anon_vma lock. If it changed they
- * should release the lock and retry obtaining a new anon_vma, because
- * it means the anon_vma was changed by move_pages() before the lock
- * could be obtained. This is the only additional complexity added to
- * the rmap code to provide this anonymous page remapping functionality.
  */
 ssize_t move_pages(struct userfaultfd_ctx *ctx, unsigned long dst_start,
 		   unsigned long src_start, unsigned long len, __u64 mode)

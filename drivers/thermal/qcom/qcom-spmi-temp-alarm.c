@@ -128,6 +128,7 @@ struct qpnp_tm_chip {
 	/* protects .thresh, .stage and chip registers */
 	struct mutex			lock;
 	bool				initialized;
+	bool				require_stage2_shutdown;
 
 	struct iio_channel		*adc;
 	const long			(*temp_map)[THRESH_COUNT][STAGE_COUNT];
@@ -395,7 +396,7 @@ static int qpnp_tm_update_critical_trip_temp(struct qpnp_tm_chip *chip,
 	WARN_ON(!mutex_is_locked(&chip->lock));
 
 	/*
-	 * Default: S2 and S3 shutdown enabled, thresholds at
+	 * Default: Stage 2 and Stage 3 shutdown enabled, thresholds at
 	 * lowest threshold set, monitoring at 25Hz
 	 */
 	reg = SHUTDOWN_CTRL1_RATE_25HZ;
@@ -717,7 +718,7 @@ static int qpnp_tm_probe(struct platform_device *pdev)
 	struct device_node *node;
 	const struct thermal_zone_device_ops *ops;
 	u8 type, subtype, dig_major, dig_minor;
-	u32 res;
+	u32 res, dig_revision;
 	int ret, irq;
 
 	node = pdev->dev.of_node;

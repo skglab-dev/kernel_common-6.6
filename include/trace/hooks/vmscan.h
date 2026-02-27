@@ -61,6 +61,12 @@ DECLARE_HOOK(android_vh_keep_reclaimed_folio,
 DECLARE_HOOK(android_vh_clear_reclaimed_folio,
 	TP_PROTO(struct folio *folio, bool reclaimed),
 	TP_ARGS(folio, reclaimed));
+DECLARE_HOOK(android_vh_handle_folio_writeback,
+	TP_PROTO(struct folio *folio, bool *bypass),
+	TP_ARGS(folio, bypass));
+DECLARE_HOOK(android_vh_reclaim_before_kswapd,
+	TP_PROTO(unsigned long *nr_reclaimed),
+	TP_ARGS(nr_reclaimed));
 DECLARE_HOOK(android_vh_evict_folios_bypass,
 	TP_PROTO(struct folio *folio, bool *bypass),
 	TP_ARGS(folio, bypass));
@@ -124,6 +130,9 @@ DECLARE_HOOK(android_vh_shrink_node_memcgs,
 DECLARE_HOOK(android_vh_should_memcg_bypass,
 	TP_PROTO(struct mem_cgroup *memcg, int priority, bool *bypass),
 	TP_ARGS(memcg, priority, bypass));
+DECLARE_HOOK(android_vh_isolate_folio_type,
+	TP_PROTO(int swappiness, int *type, int *tier, int *type_to_scan),
+	TP_ARGS(swappiness, type, tier, type_to_scan));
 DECLARE_HOOK(android_vh_direct_reclaim_begin,
 	TP_PROTO(int *prio),
 	TP_ARGS(prio));
