@@ -71,3 +71,4 @@ obj-$(CONFIG_UID_SYS_STATS)	+= uid_sys_stats.o
 obj-$(CONFIG_QSEECOM_PROXY) 	+= qseecom_proxy.o
 obj-$(CONFIG_PKVM_SMC_FILTER)  += pkvm-smc/
 obj-$(CONFIG_MEM_RECLAIM_CTL)   +=  mem_reclaim_ctl/
+obj-$(CONFIG_MI_HARDWARE_ID)	+= hwid.o
