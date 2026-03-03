@@ -553,11 +553,12 @@ static int qmi_decode_string_elem(const struct qmi_elem_info *ei_array,
 				sizeof(u8) : sizeof(u16);
 		if (string_len_sz == sizeof(u8)) {
 			rc = qmi_decode_basic_elem(&val8, buf_src,
-						   1, string_len_sz);
+						   1, temp_ei->elem_size, string_len_sz);
 			string_len = (u32)val8;
 		} else {
 			rc = qmi_decode_basic_elem(&val16, buf_src,
-						   1, string_len_sz);
+						   1, temp_ei->elem_size, string_len_sz);
+
 			string_len = (u32)val16;
 		}
 		decoded_bytes += rc;
@@ -683,11 +684,11 @@ static int qmi_decode(const struct qmi_elem_info *ei_array, void *out_c_struct,
 					sizeof(u8) : sizeof(u16);
 			if (data_len_sz == sizeof(u8)) {
 				rc = qmi_decode_basic_elem(&val8, buf_src,
-							   1, data_len_sz);
+							   1, temp_ei->elem_size, data_len_sz);
 				data_len_value = (u32)val8;
 			} else {
 				rc = qmi_decode_basic_elem(&val16, buf_src,
-							   1, data_len_sz);
+							   1, temp_ei->elem_size, data_len_sz);
 				data_len_value = (u32)val16;
 			}
 			val32 = cpu_to_le32(data_len_value);
