@@ -1040,6 +1040,9 @@ KBUILD_CFLAGS += $(call cc-disable-warning, strict-prototypes)
 # disable warning -Wmisleading-indentation
 KBUILD_CFLAGS += $(call cc-disable-warning, misleading-indentation)
 
+# disable warning -Wmacro-redefined
+KBUILD_CFLAGS += $(call cc-disable-warning, macro-redefined)
+
 # disable warning -Wnon-literal-null-conversion
 KBUILD_CFLAGS += $(call cc-disable-warning, non-literal-null-conversion)
 
@@ -1075,6 +1078,12 @@ KBUILD_CFLAGS += $(call cc-disable-warning, frame-larger-than)
 
 # disable -Wstrict-prototypes
 KBUILD_CFLAGS += $(call cc-option, -Wno-error=strict-prototypes)
+
+# disable -Wmisleading-indentation
+KBUILD_CFLAGS += $(call cc-option, -Wno-error=misleading-indentation)
+
+# disable -Wmacro-redefined
+KBUILD_CFLAGS += $(call cc-option, -Wno-error=macro-redefined)
 
 # disable -Wimplicit-function-declaration
 KBUILD_CFLAGS += $(call cc-option, -Wno-error=implicit-function-declaration)
