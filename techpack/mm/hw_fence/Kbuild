@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+KDIR := $(srctree)
+ifeq ($(CONFIG_ARCH_SUN), y)
+include $(srctree)/techpack/mm/hw_fence/sun_defconfig
+LINUXINCLUDE += -include $(srctree)/techpack/mm/hw_fence/sun_defconfig.h \
+		-I$(srctree)/techpack/mm/hw_fence/include/
+else
+include $(srctree)/techpack/mm/config/kalamammdrivers.conf
+LINUXINCLUDE += -include $(srctree)/techpack/mm/config/kalamammdriversconf.h \
+		-I$(srctree)/techpack/mm/hw_fence/include/
+endif
+
+ifdef CONFIG_QTI_HW_FENCE
+ccflags-y += \
+		-I$(srctree)/techpack/synx/include/uapi/synx/media \
+		-I$(srctree)/techpack/synx/msm/synx
+
+obj-m += msm_hw_fence.o
+
+msm_hw_fence-y := src/msm_hw_fence.o \
+		src/hw_fence_drv_priv.o \
+		src/hw_fence_drv_utils.o \
+		src/hw_fence_drv_debug.o \
+		src/hw_fence_drv_ipc.o
+
+msm_hw_fence-$(CONFIG_DEBUG_FS) += src/hw_fence_ioctl.o
+msm_hw_fence-$(CONFIG_QTI_HW_FENCE_USE_SYNX) += src/msm_hw_fence_synx_translation.o \
+		src/hw_fence_drv_interop.o
+
+endif
+EXTRA_CFLAGS += -Wformat-extra-args -Wstrict-prototypes -Wformat-insufficient-args \
+		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull
