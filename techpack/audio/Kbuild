@@ -1,0 +1,6 @@
+ifeq ($(CONFIG_ARCH_SUN), y)
+	include $(srctree)/techpack/audio/config/sunauto.conf
+	export INCS += -include $(srctree)/techpack/audio/config/sunautoconf.h
+endif
+
+obj-y := dsp/ ipc/ soc/ asoc/
