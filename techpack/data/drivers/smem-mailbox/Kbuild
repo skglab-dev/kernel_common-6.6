@@ -1,0 +1,2 @@
+LINUXINCLUDE += -I$(srctree)/techpack/data/drivers/smem-mailbox/include
+obj-m := smem-mailbox.o

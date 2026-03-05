@@ -28,6 +28,7 @@ obj-$(CONFIG_PI433)		+= pi433/
 obj-$(CONFIG_XIL_AXIS_FIFO)	+= axis-fifo/
 obj-$(CONFIG_FIELDBUS_DEV)     += fieldbus/
 obj-$(CONFIG_QLGE)		+= qlge/
+obj-$(CONFIG_QCA_CLD_WLAN) += qcacld-3.0/
 
 obj-$(CONFIG_MI_MEM_ENGINE)        += mi_mem_engine/
 obj-$(CONFIG_MI_ASYNC_RECLAIM) += mi_async_reclaim/

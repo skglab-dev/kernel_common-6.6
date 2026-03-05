@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+KDIR := $(srcetree)
+LINUXINCLUDE    += -I$(srctree)/techpack/mm/sync_fence/include/
+include $(srctree)/techpack/mm/config/kalamammdrivers.conf
+LINUXINCLUDE += -include $(srctree)/techpack/mm/config/kalamammdriversconf.h
+
+ifdef CONFIG_QCOM_SPEC_SYNC
+obj-m += sync_fence.o
+
+sync_fence-y := src/qcom_sync_file.o
+
+endif
+EXTRA_CFLAGS += -Wformat-extra-args -Wstrict-prototypes -Wformat-insufficient-args \
+		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull

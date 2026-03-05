@@ -1,0 +1,1 @@
+obj-y += msm_ext_display/ hw_fence/ sync_fence/
