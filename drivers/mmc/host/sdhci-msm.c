@@ -616,10 +616,10 @@ static unsigned int msm_get_clock_mult_for_bus_mode(struct sdhci_host *host,
 	 * uses the faster clock(100/400MHz) for some of its parts and
 	 * send the actual required clock (50/200MHz) to the card.
 	 */
-	if (ios.timing == MMC_TIMING_UHS_DDR50 ||
-	    ios.timing == MMC_TIMING_MMC_DDR52 ||
-	    (ios.timing == MMC_TIMING_MMC_HS400 &&
-	    ios.clock == MMC_HS200_MAX_DTR) ||
+	if (timing == MMC_TIMING_UHS_DDR50 ||
+	    timing == MMC_TIMING_MMC_DDR52 ||
+	    (timing == MMC_TIMING_MMC_HS400 &&
+	    clock == MMC_HS200_MAX_DTR) ||
 	    host->flags & SDHCI_HS400_TUNING)
 		return 2;
 	return 1;
@@ -640,7 +640,7 @@ static void msm_set_clock_rate_for_bus_mode(struct sdhci_host *host,
 	mult = msm_get_clock_mult_for_bus_mode(host, clock, timing);
 	desired_rate = clock * mult;
 
-	if (curr_ios.timing == MMC_TIMING_SD_HS &&
+	if (timing == MMC_TIMING_SD_HS &&
 			msm_host->uses_level_shifter &&
 			!msm_host->enable_ext_fb_clk)
 		desired_rate = LEVEL_SHIFTER_HIGH_SPEED_FREQ;
@@ -2222,7 +2222,6 @@ static void sdhci_msm_check_power_status(struct sdhci_host *host, u32 req_type)
 	u32 val = SWITCHABLE_SIGNALING_VOLTAGE;
 	const struct sdhci_msm_offset *msm_offset =
 					msm_host->offset;
-	struct mmc_host *mmc = host->mmc;
 
 	pr_debug("%s: %s: request %d curr_pwr_state %x curr_io_level %x\n",
 			mmc_hostname(host->mmc), __func__, req_type,
