@@ -317,4 +317,5 @@ endif
 always-y        := $(dtb-y)
 subdir-y        := $(dts-dirs)
 subdir-y        += camera
+subdir-y        += display
 clean-files     := *.dtb *.dtbo
