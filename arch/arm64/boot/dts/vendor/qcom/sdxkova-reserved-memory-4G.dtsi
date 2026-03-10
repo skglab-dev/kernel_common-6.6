@@ -1,0 +1,13 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+#include "sdxkova-reserved-memory-2G.dtsi"
+
+&access_control_db_mem {
+	no-map;
+	reg = <0x0 0x81280000 0x0 0x200000>;
+};
+
+

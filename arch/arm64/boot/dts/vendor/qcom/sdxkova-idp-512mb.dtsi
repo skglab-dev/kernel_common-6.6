@@ -1,0 +1,19 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+ */
+
+/ {
+};
+
+&system_cma {
+	size = <0x0 0xc00000>;
+};
+
+&qseecom_mem {
+	size = <0x0 0x400000>;
+};
+
+&va_md_mem {
+	size = <0x0 0x0>;
+};

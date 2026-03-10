@@ -1,0 +1,38 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+#include "sdxkova-idp-cpe.dtsi"
+#include "sdxkova-qcn9224.dtsi"
+
+&qcn9224_0_mem {
+#ifdef __WLAN_LITE_PROFILE__
+	size = <0x0 0x2400000>;
+#endif
+};
+
+&qcn9224_1_mem {
+#ifdef __WLAN_LITE_PROFILE__
+	size = <0x0 0x2400000>;
+#endif
+};
+
+&qcn9224_2_mem {
+	status = "disabled";
+};
+
+&soc {
+};
+
+&wifi0 {
+	board_id = <0x1003>;
+};
+
+&wifi2 {
+	status = "disabled";
+};
+
+&qcn9224_2_mem {
+	status = "disabled";
+};

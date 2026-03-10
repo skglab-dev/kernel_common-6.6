@@ -1,0 +1,184 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+#include "sdxkova-pmic-overlay.dtsi"
+#include "pm7550ba.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include "sdxkova-qpic-display.dtsi"
+
+&qnand_1 {
+	status = "ok";
+};
+
+&pmk8550_vadc {
+	/* PM8550BA Channel nodes */
+	pm7550ba_offset_ref {
+		status = "ok";
+	};
+
+	pm7550ba_vref_1p25 {
+		status = "ok";
+	};
+
+	pm7550ba_die_temp {
+		status = "ok";
+	};
+
+	pm7550ba_vph_pwr {
+		status = "ok";
+	};
+
+	pm7550ba_chg_temp {
+		status = "ok";
+	};
+
+	pm7550ba_iin_fb {
+		status = "ok";
+	};
+
+	pm7550ba_ichg_fb {
+		status = "ok";
+	};
+};
+
+&spmi_bus {
+	#address-cells = <2>;
+	#size-cells = <0>;
+	interrupt-controller;
+	#interrupt-cells = <4>;
+
+	qcom,pmg1110@a {
+		compatible = "qcom,spmi-pmic";
+		reg = <10 SPMI_USID>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		pmg1110_tz: qcom,temp-alarm@a00 {
+			compatible = "qcom,spmi-temp-alarm";
+			reg = <0xa00>;
+			interrupts = <0xa 0xa 0x0 IRQ_TYPE_EDGE_BOTH>;
+			#thermal-sensor-cells = <0>;
+		};
+	};
+};
+
+&spmi_debug_bus {
+	qcom,pm7550ba-debug@7 {
+		compatible = "qcom,spmi-pmic";
+		reg = <7 SPMI_USID>;
+		#address-cells = <2>;
+		#size-cells = <0>;
+		qcom,can-sleep;
+	};
+};
+
+&pm7550ba_tz {
+	io-channels = <&pmk8550_vadc PM7550BA_ADC5_GEN3_DIE_TEMP>;
+	io-channel-names = "thermal";
+};
+
+&modem_pas {
+	qcom,pmic_glink_rpmsg {
+		qcom,glink-channels = "PMIC_RTR_ADSP_APPS";
+	};
+
+	qcom,pmic_glink_log_rpmsg {
+		qcom,glink-channels = "PMIC_LOGS_ADSP_APPS";
+		qcom,intents = <0x800 5
+				0xc00 3
+				0x2000 1>;
+	};
+};
+
+&pmic_glink {
+	status = "ok";
+};
+
+&pmic_glink_log {
+	status = "ok";
+};
+
+&sdhc_1 {
+	status = "ok";
+
+	no-mmc;
+	max-frequency = <192000000>;
+
+	qcom,uses_level_shifter;
+
+	vdd-supply = <&vreg_sdc1_emmc_sd_vdd>;
+	qcom,vdd-voltage-level = <2950000 2950000>;
+	qcom,vdd-current-level = <0 800000>;
+
+	vdd-io-supply = <&vreg_sdc1_sd_ls_vccb>;
+	qcom,vdd-io-voltage-level = <1800000 2850000>;
+	qcom,vdd-io-current-level = <0 22000>;
+
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&sdc1_sd_on>;
+	pinctrl-1 = <&sdc1_sd_off>;
+
+	cd-gpios = <&tlmm 103 GPIO_ACTIVE_LOW>;
+
+	operating-points-v2 = <&sdhc2_opp_table>;
+};
+
+&thermal_zones {
+	pmg1110_temp_alarm: pmg1110_tz {
+		polling-delay-passive = <100>;
+		polling-delay = <0>;
+		thermal-sensors = <&pmg1110_tz>;
+
+		trips {
+			trip0 {
+				temperature = <95000>;
+				hysteresis = <0>;
+				type = "passive";
+			};
+
+			trip1 {
+				temperature = <115000>;
+				hysteresis = <0>;
+				type = "critical";
+			};
+
+			trip2 {
+				temperature = <145000>;
+				hysteresis = <0>;
+				type = "critical";
+			};
+		};
+	};
+};
+
+&pm7550ba_eusb2_repeater {
+	vdd18-supply = <&pmx75_l5>;
+	vdd3-supply = <&pmx75_l10>;
+	status = "ok";
+};
+
+&eusb2_phy {
+	dummy-supply = <&pm7550ba_eusb2_repeater>;
+	usb-repeater = <&pm7550ba_eusb2_repeater>;
+};
+
+&usb {
+	usb-role-switch;
+	port {
+		usb_port0: endpoint {
+			remote-endpoint = <&usb_port0_connector>;
+		};
+	};
+};
+
+&ucsi {
+	connector {
+		port {
+			usb_port0_connector: endpoint {
+				remote-endpoint = <&usb_port0>;
+			};
+		};
+	};
+};

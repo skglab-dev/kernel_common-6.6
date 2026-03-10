@@ -1,0 +1,18 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+/dts-v1/;
+
+#include "sdxkova.dtsi"
+#include "sdxkova-idp-ap.dtsi"
+#include "sdxkova-reserved-memory-2G.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. SDXKOVA IDP TARANG AP";
+	compatible = "qcom,sdxkova-idp",
+			"qcom,sdxkova", "qcom,idp";
+	qcom,msm-id = <677 0x10000>, <678 0x10000>, <679 0x10000>, <725 0x10000>, <726 0x10000>;
+	qcom,board-id = <0x4010022 0x404>;
+};

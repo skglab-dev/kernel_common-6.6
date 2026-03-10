@@ -1,0 +1,21 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
+ */
+
+/dts-v1/;
+
+#include "sa510m.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. KUNO IDP";
+	compatible = "qcom,sa510m-idp",
+		"qcom,sa510m", "qcom,idp";
+	qcom,msm-id = <570 0x10000>;
+	qcom,board-id = <0x10008 0x103>, <0x10008 0x203>;
+
+};
+
+&qnand_1 {
+	status = "ok";
+};

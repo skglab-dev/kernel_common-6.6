@@ -1,0 +1,147 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+ */
+
+#include "sdxkova-pmic-overlay.dtsi"
+
+&soc {
+	phy0_vreg: phy0_vreg {
+		compatible = "qti-regulator-fixed";
+		regulator-name = "phy0_vreg";
+		gpio = <&tlmm 86 GPIO_ACTIVE_HIGH>;
+		regulator-min-microvolt = <700000>;
+		regulator-max-microvolt = <700000>;
+		enable-active-high;
+		regulator-enable-ramp-delay = <10000>;
+	};
+
+	phy1_vreg: phy1_vreg {
+		compatible = "qti-regulator-fixed";
+		regulator-name = "phy1_vreg";
+		gpio = <&tlmm 88 GPIO_ACTIVE_HIGH>;
+		regulator-min-microvolt = <1050000>;
+		regulator-max-microvolt = <1050000>;
+		enable-active-high;
+		regulator-enable-ramp-delay = <80000>;
+	};
+
+	stmmac_axi_setup: stmmac-axi-config {
+		snps,wr_osr_lmt = <8>;
+		snps,rd_osr_lmt = <8>;
+		snps,axi_kbbe;
+		/* If FB is disabled, the AXI master chooses
+		 * a burst length of any value less than the
+		 * maximum enabled burst length
+		 * (all lesser burst length enables are redundant).
+		 */
+		snps,blen = <0 0 0 0 0 0 0>;
+	};
+
+	mtl_rx_setup: rx-queues-config {
+		snps,rx-queues-to-use = <2>;
+		snps,rx-sched-sp;
+
+		queue0 {
+			snps,dcb-algorithm;
+			snps,map-to-dma-channel = <0x0>;
+		};
+
+		queue1 {
+			snps,dcb-algorithm;
+			snps,map-to-dma-channel = <0x1>;
+		};
+	};
+
+	mtl_tx_setup: tx-queues-config {
+		snps,tx-queues-to-use = <2>;
+		snps,tx-sched-sp;
+		queue0 {
+			snps,dcb-algorithm;
+		};
+
+		queue1 {
+			snps,dcb-algorithm;
+		};
+	};
+};
+
+&pmx75_vbus_detect {
+	status = "ok";
+};
+
+&sdhc_1 {
+	status = "ok";
+
+	no-mmc;
+	max-frequency = <192000000>;
+
+	vdd-supply = <&vreg_sdc1_emmc_sd_vdd>;
+	qcom,vdd-voltage-level = <2950000 2950000>;
+	qcom,vdd-current-level = <0 800000>;
+
+	vdd-io-supply = <&vreg_sdc1_sd_ls_vccb>;
+	qcom,vdd-io-voltage-level = <1800000 2850000>;
+	qcom,vdd-io-current-level = <0 22000>;
+
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&sdc1_sd_on>;
+	pinctrl-1 = <&sdc1_sd_off>;
+
+	cd-gpios = <&tlmm 103 GPIO_ACTIVE_LOW>;
+
+	operating-points-v2 = <&sdhc2_opp_table>;
+};
+
+&pmx75_eusb2_repeater {
+	vdd18-supply = <&pmx75_l5>;
+	vdd3-supply = <&pmx75_l10>;
+	status = "ok";
+};
+
+&eusb2_phy {
+	dummy-supply = <&pmx75_eusb2_repeater>;
+	usb-repeater = <&pmx75_eusb2_repeater>;
+};
+
+&usb {
+	extcon = <&pmx75_vbus_detect>, <&eud>;
+};
+
+&qnand_1 {
+	status = "ok";
+};
+
+&qupv3_se2_i2c {
+	status = "disabled";
+};
+
+&modem_pas {
+	qcom,pmic_glink_rpmsg {
+		qcom,glink-channels = "PMIC_RTR_ADSP_APPS";
+	};
+
+	qcom,pmic_glink_log_rpmsg {
+		qcom,glink-channels = "PMIC_LOGS_ADSP_APPS";
+		qcom,intents = <0x800 5
+				0xc00 3
+				0x2000 1>;
+	};
+};
+
+&pmic_glink {
+	status = "ok";
+};
+
+&pmic_glink_log {
+	status = "ok";
+};
+
+&pcie1 {
+	status = "disabled";
+};
+
+&pcie2 {
+	status = "disabled";
+};
+

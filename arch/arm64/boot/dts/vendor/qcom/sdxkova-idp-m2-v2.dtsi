@@ -1,0 +1,13 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ */
+
+#include "sdxkova-idp-m2.dtsi"
+
+&soc {
+};
+
+&chosen {
+	bootargs = "cpufreq.default_governor=performance pcie_ports=compat reboot=w";
+};

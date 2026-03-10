@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+%YAML 1.2
+---
+$id: http://devicetree.org/schemas/net/qcom-qrtr-mhi-dev.yaml#
+$schema: http://devicetree.org/meta-schemas/core.yaml#
+
+title: QTI QRTR MHI Device Transport Configuration
+
+maintainers:
+  - Deepak Kumar Singh <quic_deesin@quicinc.com>
+
+description: |
+  Configuration properties for the qrtr mhi Transport. This configuration
+  is to instantiate a transport for IPC Router protocol communication between
+  a device to the host over MHI. The modem will generally be configured as a
+  device and this mhi transport is intended to be used on the modem controller
+  co-processor.
+
+properties:
+  compatible:
+    const: qcom,qrtr-mhi-dev
+
+  qcom,net-id:
+    $ref: '/schemas/types.yaml#/definitions/uint32'
+    description: Indicates what subnet this transport belongs to. Should be
+                 passed into the qrtr core logic to determine if forwarding
+                 is needed on this endpoint.
+
+  qcom,low-latency:
+    type: boolean
+    description: Indicates whether this transport receiving thread needs to
+                 be set to realtime priority for enhanced performance.
+
+required:
+  - compatible
+
+additionalProperties: false
+
+examples:
+  - |
+    qcom,mhi_dev_qrtr {
+        compatible = "qcom,qrtr-mhi-dev";
+        qcom,net-id = <3>;
+        qcom,low-latency;
+    };

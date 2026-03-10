@@ -1,0 +1,120 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+#include "sdxkova-idp-m2.dtsi"
+#include "pm7550ba.dtsi"
+
+&soc {
+};
+
+&chosen {
+	bootargs = "cpufreq.default_governor=performance pcie_ports=compat reboot=w";
+};
+
+&pmx75_eusb2_repeater {
+	status = "disabled";
+};
+
+&pmx75_vbus_detect {
+	status = "disabled";
+};
+
+&pmk8550_vadc {
+	/* PM8550BA Channel nodes */
+	pm7550ba_offset_ref {
+		status = "ok";
+	};
+
+	pm7550ba_vref_1p25 {
+		status = "ok";
+	};
+
+	pm7550ba_die_temp {
+		status = "ok";
+	};
+
+	pm7550ba_vph_pwr {
+		status = "ok";
+	};
+
+	pm7550ba_chg_temp {
+		status = "ok";
+	};
+
+	pm7550ba_iin_fb {
+		status = "ok";
+	};
+
+	pm7550ba_ichg_fb {
+		status = "ok";
+	};
+};
+
+&spmi_debug_bus {
+	qcom,pm7550ba-debug@7 {
+		compatible = "qcom,spmi-pmic";
+		reg = <7 SPMI_USID>;
+		#address-cells = <2>;
+		#size-cells = <0>;
+		qcom,can-sleep;
+	};
+};
+
+&pm7550ba_tz {
+	io-channels = <&pmk8550_vadc PM7550BA_ADC5_GEN3_DIE_TEMP>;
+	io-channel-names = "thermal";
+};
+
+&modem_pas {
+	qcom,pmic_glink_rpmsg {
+		qcom,glink-channels = "PMIC_RTR_ADSP_APPS";
+	};
+
+	qcom,pmic_glink_log_rpmsg {
+		qcom,glink-channels = "PMIC_LOGS_ADSP_APPS";
+		qcom,intents = <0x800 5
+				0xc00 3
+				0x2000 1>;
+	};
+};
+
+&pmic_glink {
+	status = "ok";
+};
+
+&pmic_glink_log {
+	status = "ok";
+};
+
+&pm7550ba_eusb2_repeater {
+	vdd18-supply = <&pmx75_l5>;
+	vdd3-supply = <&pmx75_l10>;
+	status = "ok";
+};
+
+&eusb2_phy {
+	dummy-supply = <&pm7550ba_eusb2_repeater>;
+	usb-repeater = <&pm7550ba_eusb2_repeater>;
+};
+
+&usb {
+	extcon = <&eud>;
+	usb-role-switch;
+	port {
+		usb_port0: endpoint {
+			remote-endpoint = <&usb_port0_connector>;
+		};
+	};
+};
+
+&ucsi {
+	connector {
+		port {
+			usb_port0_connector: endpoint {
+				remote-endpoint = <&usb_port0>;
+			};
+		};
+	};
+};

@@ -1,0 +1,97 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+#include "sdxkova-idp-cpe.dtsi"
+
+&tlmm {
+	sdc1_emmc_on: sdc1_emmc_on {
+		clk {
+			pins = "sdc1_clk";
+			bias-disable;
+			drive-strength = <8>;
+		};
+
+		cmd {
+			pins = "sdc1_cmd";
+			bias-pull-up;
+			drive-strength = <8>;
+		};
+
+		data {
+			pins = "sdc1_data";
+			bias-pull-up;
+			drive-strength = <8>;
+		};
+
+		rclk {
+			pins = "sdc1_rclk";
+			bias-pull-down;
+		};
+	};
+
+	sdc1_emmc_off: sdc1_emmc_off {
+		clk {
+			pins = "sdc1_clk";
+			bias-disable;
+			drive-strength = <2>;
+		};
+
+		cmd {
+			pins = "sdc1_cmd";
+			bias-pull-up;
+			drive-strength = <2>;
+		};
+
+		data {
+			pins = "sdc1_data";
+			bias-pull-up;
+			drive-strength = <2>;
+		};
+
+		rclk {
+			pins = "sdc1_rclk";
+			bias-pull-down;
+		};
+	};
+};
+
+&soc {
+};
+
+&wifi0 {
+	board_id = <0x0004>;
+};
+
+&pcie0 {
+	qcom,ep-gpio = <&tlmm 23 GPIO_ACTIVE_HIGH>;
+	qcom,boot-option = <0x1>;
+};
+
+&qupv3_se2_i2c {
+	status = "ok";
+	pcie_i2c_ctrl: pcie_i2c_ctrl {
+		compatible = "qcom,pcie0-i2c-femto-wkk";
+		reg = <0x09>;
+		odrv_en_addr = /bits/ 8 <0x0A>;
+		odrv_en_val  = /bits/ 8 <0x08>;
+		page_addr = /bits/ 8 <0xFC>;
+		page_val  = /bits/ 8 <0x01>;
+		activate = /bits/ 8 <0x01>;
+		gpio_ctl = /bits/ 8 <0x15>;
+	};
+};
+
+&cnss_pci0 {
+	pcie-i2c-phandle = <&qupv3_se2_i2c>;
+};
+
+&pcie1 {
+	status = "disabled";
+};
+
+&pcie2 {
+	status = "disabled";
+};
+

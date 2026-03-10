@@ -1,0 +1,70 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+/dts-v1/;
+
+#include "sa510m.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. SA510M IDP";
+	compatible = "qcom,sa510m-idp",
+		"qcom,sa510m", "qcom,idp";
+	qcom,msm-id = <697 0x10000>;
+	qcom,board-id = <0x22 0x200>, <0x22 0x300>;
+};
+
+&qnand_1 {
+	status = "ok";
+};
+
+&qupv3_se2_spi {
+	status = "ok";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	can-controller@0 {
+		compatible = "qcom,nxp,mpc5746c";
+		reg = <0>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <100 0>;
+		spi-max-frequency = <5000000>;
+		qcom,clk-freq-mhz = <40000000>;
+		qcom,max-can-channels = <1>;
+		qcom,bits-per-word = <8>;
+		qcom,timestamp-conf = <1>;
+		qcom,support-can-fd;
+	};
+};
+
+&sdhc_4 {
+	status = "ok";
+
+	non-removable;
+	no-sd;
+	no-sdio;
+	cap-mmc-hw-reset;
+
+	mmc-ddr-1_8v;
+	mmc-hs200-1_8v;
+
+	/* Add dt entry for gcc hw reset */
+	resets = <&gcc GCC_SDCC4_BCR>;
+	reset-names = "core_reset";
+
+	vdd-supply = <&vreg_sdc4_emmc_sd_vdd>;
+	qcom,vdd-voltage-level = <2850000 2850000>;
+	qcom,vdd-current-level = <0 800000>;
+	qcom,vdd-always-on;
+
+	vdd-io-supply = <&L6A>;
+	qcom,vdd-io-voltage-level = <1800000 1800000>;
+	qcom,vdd-io-current-level = <0 20000>;
+	qcom,vdd-io-always-on;
+
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&sdc4_on>;
+	pinctrl-1 = <&sdc4_off>;
+};

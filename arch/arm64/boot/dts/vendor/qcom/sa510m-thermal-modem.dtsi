@@ -1,0 +1,122 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+#include <dt-bindings/thermal/thermal_qti.h>
+
+&soc {
+	qmi-tmd-devices {
+		compatible = "qcom,qmi-cooling-devices";
+
+		modem {
+			qcom,instance-id = <QMI_MODEM_INST_ID>;
+
+			modem_lte_dsc: modem_lte_dsc {
+				qcom,qmi-dev-name = "modem_lte_dsc";
+				#cooling-cells = <2>;
+			};
+
+			modem_nr_1rx_dsc: modem_nr_1rx_dsc {
+				qcom,qmi-dev-name = "modem_nr_1rx_dsc";
+				#cooling-cells = <2>;
+			};
+
+			modem_nr_2rx_dsc: modem_nr_2rx_dsc {
+				qcom,qmi-dev-name = "modem_nr_2rx_dsc";
+				#cooling-cells = <2>;
+			};
+
+			pa_lte_sdr0_dsc: pa_lte_sdr0_dsc {
+				qcom,qmi-dev-name = "pa_lte_sdr0_dsc";
+				#cooling-cells = <2>;
+			};
+
+			pa_nr_sdr0_dsc: pa_nr_sdr0_dsc {
+				qcom,qmi-dev-name = "pa_nr_sdr0_dsc";
+				#cooling-cells = <2>;
+			};
+
+			modem_bw_backoff: modem_bw_backoff {
+				qcom,qmi-dev-name = "modem_bw_backoff";
+				#cooling-cells = <2>;
+			};
+		};
+	};
+
+	qmi_sensor: qmi-ts-sensors {
+		compatible = "qcom,qmi-sensors";
+		#thermal-sensor-cells = <1>;
+
+		modem {
+			qcom,instance-id = <QMI_MODEM_INST_ID>;
+			qcom,qmi-sensor-names = "pa",
+						"sdr0";
+		};
+	};
+};
+
+&thermal_zones {
+	pa {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-sensors = <&qmi_sensor
+				(QMI_MODEM_INST_ID+QMI_PA)>;
+		trips {
+			thermal-engine-config0 {
+				temperature = <150000>;
+				hysteresis = <1000>;
+				type = "passive";
+			};
+
+			pa_config0: pa-config0 {
+				temperature = <115000>;
+				hysteresis = <3000>;
+				type = "active";
+			};
+
+			pa_config1: pa-config1 {
+				temperature = <135000>;
+				hysteresis = <5000>;
+				type = "active";
+			};
+		};
+
+		cooling-maps {
+			pa_lte_cdev0 {
+				trip = <&pa_config0>;
+				cooling-device = <&pa_lte_sdr0_dsc 5 5>;
+			};
+
+			pa_nr_cdev0 {
+				trip = <&pa_config0>;
+				cooling-device = <&pa_nr_sdr0_dsc 5 5>;
+			};
+
+			pa_lte_cdev1 {
+				trip = <&pa_config1>;
+				cooling-device = <&pa_lte_sdr0_dsc 255 255>;
+			};
+
+			pa_nr_cdev1 {
+				trip = <&pa_config1>;
+				cooling-device = <&pa_nr_sdr0_dsc 255 255>;
+			};
+		};
+	};
+
+	sdr0 {
+		polling-delay-passive = <0>;
+		polling-delay = <0>;
+		thermal-sensors = <&qmi_sensor
+				(QMI_MODEM_INST_ID+QMI_SDR0)>;
+		trips {
+			thermal-engine-config0 {
+				temperature = <150000>;
+				hysteresis = <1000>;
+				type = "passive";
+			};
+		};
+	};
+};
+
