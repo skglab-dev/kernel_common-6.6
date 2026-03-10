@@ -1,0 +1,50 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+/dts-v1/;
+
+#include "sa510m.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. SA510M WLAN OVER ROME IDP";
+	compatible = "qcom,sa510m-idp",
+		"qcom,sa510m", "qcom,idp";
+	qcom,msm-id = <697 0x10000>;
+	qcom,board-id = <0x22 0x201>, <0x22 0x301>;
+};
+
+&qnand_1 {
+	status = "ok";
+};
+
+&sdhc_4 {
+	status = "ok";
+
+	no-sd;
+	no-mmc;
+	cap-mmc-hw-reset;
+	broken-cd;
+
+	mmc-ddr-1_8v;
+	mmc-hs200-1_8v;
+	keep-power-in-suspend;
+	/* Add dt entry for gcc hw reset */
+	resets = <&gcc GCC_SDCC4_BCR>;
+	reset-names = "core_reset";
+
+	vdd-supply = <&vreg_sdc4_emmc_sd_vdd>;
+	qcom,vdd-voltage-level = <2850000 2850000>;
+	qcom,vdd-current-level = <0 800000>;
+	qcom,vdd-always-on;
+
+	vdd-io-supply = <&L6A>;
+	qcom,vdd-io-voltage-level = <1800000 1800000>;
+	qcom,vdd-io-current-level = <0 20000>;
+	qcom,vdd-io-always-on;
+
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&sdc4_on &sdc4_wlan_gpio_active>;
+	pinctrl-1 = <&sdc4_off &sdc4_wlan_gpio_active>;
+};

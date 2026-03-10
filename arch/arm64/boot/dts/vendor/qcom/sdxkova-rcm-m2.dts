@@ -1,0 +1,18 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+/dts-v1/;
+
+#include "sdxkova.dtsi"
+#include "sdxkova-rcm-m2.dtsi"
+#include "sdxkova-reserved-memory.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. SDXKOVA RCM M2";
+	compatible = "qcom,sdxkova-rcm",
+			"qcom,sdxkova", "qcom,rcm";
+	qcom,msm-id = <677 0x10000>, <678 0x10000>, <679 0x10000>;
+	qcom,board-id = <0x2010015 0x302>;
+};

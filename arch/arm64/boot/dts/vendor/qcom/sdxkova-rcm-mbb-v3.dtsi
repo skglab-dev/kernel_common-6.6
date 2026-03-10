@@ -1,0 +1,81 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+#include "sdxkova-rcm-mbb.dtsi"
+#include "sdxkova-qpic-display.dtsi"
+&qnand_1 {
+	status = "disabled";
+};
+
+/delete-node/ &sdhc_1;
+
+&soc {
+	sdhc_1: sdhci@8804000 {
+		status = "ok";
+
+		compatible = "qcom,sdhci-msm-v5";
+		reg = <0x0 0x08804000 0x0 0x1000>, <0x0 0x08805000 0x0 0x1000>;
+		reg-names = "hc", "cqhci";
+
+		interrupts = <GIC_SPI 210 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 227 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "hc_irq", "pwr_irq";
+
+		bus-width = <8>;
+		no-sd;
+		no-sdio;
+		qcom,restore-after-cx-collapse;
+		non-removable;
+		supports-cqe;
+		cap-mmc-hw-reset;
+
+		clocks = <&gcc GCC_SDCC1_AHB_CLK>,
+			<&gcc GCC_SDCC1_APPS_CLK>;
+		clock-names = "iface", "core";
+
+		/* DLL HSR settings. Refer go/hsr - <Target> DLL settings */
+		qcom,dll-hsr-list = <0x000F442C 0x0 0x01
+					0x090106C0 0x80040868>;
+
+		iommus = <&apps_smmu 0x00A0 0x0>;
+		dma-coherent;
+		qcom,iommu-dma = "fastmap";
+		qcom,iommu-dma-addr-pool = <0x0 0x20000000 0x0 0x10000000>;
+		qcom,iommu-geometry = <0x0 0x20000000 0x0 0x10000000>;
+
+		interconnects = <&system_noc MASTER_SDCC_1 &mc_virt SLAVE_EBI1>,
+			<&gem_noc MASTER_APPSS_PROC &system_noc SLAVE_SDCC_1>;
+		interconnect-names = "sdhc-ddr","cpu-sdhc";
+		operating-points-v2 = <&sdhc1_opp_table>;
+
+		mmc-ddr-1_8v;
+		mmc-hs200-1_8v;
+		mmc-hs400-1_8v;
+		mmc-hs400-enhanced-strobe;
+
+		/* Add dt entry for gcc hw reset */
+		resets = <&gcc GCC_EMMC_BCR>;
+		reset-names = "core_reset";
+
+		vdd-supply = <&vreg_sdc1_emmc_sd_vdd>;
+		qcom,vdd-voltage-level = <2950000 2950000>;
+		qcom,vdd-current-level = <0 570000>;
+
+		vdd-io-supply = <&L6B>;
+		qcom,vdd-io-always-on;
+		qcom,vdd-io-lpm-sup;
+		qcom,vdd-io-voltage-level = <1800000 1800000>;
+		qcom,vdd-io-current-level = <0 200000>;
+
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&sdc1_emmc_on>;
+		pinctrl-1 = <&sdc1_emmc_off>;
+
+		qos0 {
+			mask = <0x0f>;
+			vote = <44>;
+		};
+	};
+};

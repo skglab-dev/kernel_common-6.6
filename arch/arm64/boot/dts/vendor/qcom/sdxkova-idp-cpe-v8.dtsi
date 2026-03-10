@@ -1,0 +1,11 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+#include "sdxkova-idp-cpe-v7.dtsi"
+&soc {
+};
+
+&pcie_i2c_ctrl {
+		activate = /bits/ 8 <0x00>;
+	};

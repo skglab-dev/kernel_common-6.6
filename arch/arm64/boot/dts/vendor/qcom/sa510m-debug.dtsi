@@ -1,0 +1,73 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
+ */
+
+#include <dt-bindings/soc/qcom,dcc_v2.h>
+
+&soc {
+	dcc: dcc_v2@100ff000 {
+		compatible = "qcom,dcc-v2";
+		reg = <0x240ff000 0x1000>,
+		      <0x24080000 0x8000>;
+
+		qcom,transaction_timeout = <0>;
+		reg-names = "dcc-base", "dcc-ram-base";
+		dcc-ram-offset = <0>;
+	};
+
+	mem_dump: mem_dump {
+		compatible = "qcom,mem-dump";
+		memory-region = <&dump_mem>;
+
+		c0_context {
+			qcom,dump-size = <0x800>;
+			qcom,dump-id = <0x0>;
+		};
+
+		rpmh {
+			qcom,dump-size = <0x400000>;
+			qcom,dump-id = <0xec>;
+		};
+
+		pmic {
+			qcom,dump-size = <0x200000>;
+			qcom,dump-id = <0xe4>;
+		};
+
+		etf_swao {
+			qcom,dump-size = <0x10000>;
+			qcom,dump-id = <0xf1>;
+		};
+
+		etr_reg {
+			qcom,dump-size = <0x1000>;
+			qcom,dump-id = <0x100>;
+		};
+
+		etr1_reg {
+			qcom,dump-size = <0x1000>;
+			qcom,dump-id = <0x105>;
+		};
+
+		etfswao_reg {
+			qcom,dump-size = <0x1000>;
+			qcom,dump-id = <0x102>;
+		};
+
+		misc_data {
+			qcom,dump-size = <0x1000>;
+			qcom,dump-id = <0xe8>;
+		};
+
+		osm_reg {
+			qcom,dump-size = <0x400>;
+			qcom,dump-id = <0x163>;
+		};
+
+		pcu_reg {
+			qcom,dump-size = <0x400>;
+			qcom,dump-id = <0x164>;
+		};
+	};
+};

@@ -1,0 +1,19 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+/dts-v1/;
+
+#include "sdxkova.dtsi"
+#include "sdxkova-idp-m2-v6.dtsi"
+#include "sdxkova-idp-512mb.dtsi"
+#include "sdxkova-reserved-memory-512mb.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. SDXKOVA IDP M2 V6 512MB PCIE-EP";
+	compatible = "qcom,sdxkova-idp",
+			"qcom,sdxkova", "qcom,idp";
+	qcom,msm-id = <677 0x10000>, <678 0x10000>, <679 0x10000>;
+	qcom,board-id = <0x2060022 0x202>;
+};

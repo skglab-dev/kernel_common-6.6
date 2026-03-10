@@ -1,0 +1,76 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+#include "sdxkova-pmic-overlay.dtsi"
+
+&soc {
+};
+
+&qnand_1 {
+	status = "ok";
+};
+
+&pmx75_eusb2_repeater {
+	vdd18-supply = <&pmx75_l5>;
+	vdd3-supply = <&pmx75_l10>;
+	status = "ok";
+};
+
+&eusb2_phy {
+	dummy-supply = <&pmx75_eusb2_repeater>;
+	usb-repeater = <&pmx75_eusb2_repeater>;
+};
+
+&pmx75_vbus_detect {
+	status = "ok";
+};
+
+&usb {
+	/* Need to dynamically bypass SMMU when in PCIE mode */
+	nvmem-cells = <&boot_config>;
+	nvmem-cell-names = "boot_conf";
+	qcom,fast-boot-mask = <0x1e>;
+	qcom,host-bypass-mask = <0x40>;
+	qcom,fast-boot-values = <0x5 0x7>;
+
+	extcon = <&pmx75_vbus_detect>, <&eud>;
+};
+
+&pcie0 {
+	status = "disabled";
+};
+
+&pcie0_msi {
+	status = "disabled";
+};
+
+&pcie1 {
+	status = "disabled";
+};
+
+&pcie2 {
+	status = "disabled";
+};
+
+&pcie_ep {
+	status = "ok";
+};
+
+&mhi_device {
+	status = "ok";
+};
+
+&mhi_net_device {
+	status = "ok";
+};
+
+&tmc_etr {
+	qcom,qdss-pcie-support;
+	qcom,qdss-ipa-support;
+	ipa-peer-evt-reg-pa = <0x24077818>;
+	pcie-desc-buf-size = <0x2000>;
+	pcie-data-buf-size = <0x4000>;
+	sw_pcie_buf_size = <0x800000>;
+};

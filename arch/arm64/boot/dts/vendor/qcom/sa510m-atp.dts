@@ -1,0 +1,40 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+/dts-v1/;
+
+#include "sa510m.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. SA510M ATP";
+	compatible = "qcom,sa510m-atp",
+		"qcom,sa510m", "qcom,atp";
+	qcom,msm-id = <697 0x10000>;
+	qcom,board-id = <0x21 0x200>, <0x21 0x300>;
+};
+
+&qnand_1 {
+	status = "ok";
+};
+
+&qupv3_se2_spi {
+	status = "ok";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	can-controller@0 {
+		compatible = "qcom,nxp,mpc5746c";
+		reg = <0>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <100 0>;
+		spi-max-frequency = <5000000>;
+		qcom,clk-freq-mhz = <40000000>;
+		qcom,max-can-channels = <1>;
+		qcom,bits-per-word = <8>;
+		qcom,timestamp-conf = <1>;
+		qcom,support-can-fd;
+	};
+};

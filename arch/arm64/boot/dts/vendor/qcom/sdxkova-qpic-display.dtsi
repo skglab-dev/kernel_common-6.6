@@ -1,0 +1,69 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+&soc {
+	mdss_qpic: qcom,msm_qpic@1c98000 {
+		compatible = "qcom,mdss_qpic";
+
+		reg = <0x0 0x1c98000 0x0 0x24000>,
+			<0x0 0xf100000 0x0 0x100000>;
+		reg-names = "qpic_base","tlmm_central_base";
+
+		interrupts-extended = <&intc GIC_SPI 75 IRQ_TYPE_LEVEL_HIGH>,
+				<&intc GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>;
+
+		interrupt-names = "qpic_irq",
+				"bam_irq";
+
+
+		interconnect-names = "qpic-display-data-bus";
+		interconnects = <&system_noc MASTER_QPIC &mc_virt SLAVE_EBI1>;
+		qcom,msm-bus,name = "mdss_qpic";
+		qcom,msm-bus,num-cases = <2>;
+		qcom,msm-bus,num-paths = <1>;
+
+		qcom,msm-bus,vectors-KBps =
+			<0 0>,
+			/* Voting for max b/w on PNOC bus for now */
+			<400000 800000>;
+
+		qcom,panel-name = "ili_qvga";
+		vdd-supply = <&pmx75_l6>;
+
+		qcom,rst-gpio = <&tlmm 99 0>;
+		qcom,cs-gpio = <&tlmm 101 0>;
+		qcom,ad8-gpio = <&tlmm 100 0>;
+		qcom,panel-te-gpio = <&tlmm 98 0>;
+
+		clocks = <&rpmhcc RPMH_QPIC_CLK>;
+		clock-names = "core_clk";
+
+		pinctrl-names= "qpic_display_default", "qpic_display_sleep";
+		pinctrl-0 = <&qpic_cs_active &qpic_te_active
+			&qpic_rs_active &qpic_ad_active>;
+		pinctrl-1 = <&qpic_cs_sleep &qpic_te_sleep
+			&qpic_rs_sleep &qpic_ad_sleep>;
+
+		nvmem-cells = <&boot_config>;
+		nvmem-cell-names = "boot_conf";
+
+		/* Storage boot device fuse is present in QFPROM_RAW_OEM_CONFIG_ROW0_LSB
+		 * this fuse is blown by bootloader and populated in BOOT_CONFIG
+		 * register[1:4] FAST_BOOT bits.
+		 *
+		 * FAST_BOOT bits might vary from target to target.
+		 * So, mention the number of FAST_BOOT bits used for this target.
+		 */
+		qcom,boot_dev_bits = <0x4>;
+
+		/* Boot device detection value (FAST_BOOT bits) for NAND/eMMC,
+		 * which might varies from target to target.
+		 */
+		qcom,nand_boot = <0x0 0x4 0x5>;
+
+		iommus = <&apps_smmu 0x100 0x3>;
+		qcom,iommu-dma = "atomic";
+		dma-coherent;
+	};
+};

@@ -1,0 +1,62 @@
+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+%YAML 1.2
+---
+$id: "http://devicetree.org/schemas/i2c/qcom,pcie0-i2c-femto-wkk.yaml#"
+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+
+title: Qualcomm PCIe I2C Femto WKK Controller
+
+description: |
+  Binding for the Qualcomm PCIe-attached I2C controller used for femto clock
+  configuration via the QUPv3 serial engine. This controller manages the clock
+  settings for PCIe devices, allowing for proper clock configuration and power
+  management of PCIe endpoints.
+
+maintainers:
+  - Qualcomm Linux Team <linux-arm-msm@lists.infradead.org>
+
+properties:
+  compatible:
+    description: Device compatibility string(s)
+    const: qcom,pcie0-i2c-femto-wkk
+
+  reg:
+    description: I2C slave address used for communication
+    maxItems: 1
+
+  odrv_en_addr:
+    description: Offset address for output drive enable register
+    $ref: /schemas/types.yaml#/definitions/uint8
+
+  odrv_en_val:
+    description: Value to write to output drive enable register
+    $ref: /schemas/types.yaml#/definitions/uint8
+
+  page_addr:
+    description: Offset address for page selection register
+    $ref: /schemas/types.yaml#/definitions/uint8
+
+  page_val:
+    description: Value to write to page selection register
+    $ref: /schemas/types.yaml#/definitions/uint8
+
+required:
+  - compatible
+  - reg
+  - odrv_en_addr
+  - odrv_en_val
+  - page_addr
+  - page_val
+
+unevaluatedProperties: false
+
+examples:
+  - |
+    pcie_i2c_ctrl: pcie_i2c_ctrl {
+      compatible = "qcom,pcie0-i2c-femto-wkk";
+      reg = <0x09>;
+      odrv_en_addr = /bits/ 8 <0x0A>;
+      odrv_en_val  = /bits/ 8 <0x08>;
+      page_addr = /bits/ 8 <0xFC>;
+      page_val  = /bits/ 8 <0x01>;
+    };

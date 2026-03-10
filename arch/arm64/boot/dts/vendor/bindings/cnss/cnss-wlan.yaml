@@ -1,0 +1,58 @@
+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+%YAML 1.2
+---
+$id: http://devicetree.org/schemas/cnss/cnss-wlan.yaml#
+$schema: http://devicetree.org/meta-schemas/core.yaml#
+
+title: Qualcomm ConNectivity SubSystem Platform Driver
+
+maintainers:
+  - Qualcomm
+
+description:
+  This platform driver adds support for the CNSS subsystem used for PCIe
+  based Wi-Fi devices. It also adds support to integrate PCIe WLAN module
+  to subsystem restart framework. Apart from that, it also manages the
+  3.3V voltage regulator, WLAN Enable GPIO signal and PCIe link dynamically
+  with support for suspend and resume by retaining the PCI config space
+  states when PCIe link is shutdown. The main purpose of this device tree
+  entry below is to invoke the CNSS platform driver and provide handle to
+  the WLAN enable GPIO, 3.3V fixed voltage regulator resources. It also
+  provides the reserved RAM dump memory location and size.
+
+properties:
+  compatible:
+    const: qcom,cnss-qcn9224
+
+  reg:
+    items:
+      - description: IPA iova base address
+      - description: Max size of IPA iova range
+
+  memory-region:
+    description:
+       Holds memory for firmware regions.
+
+
+required:
+  - compatible
+  - reg
+  - memory-region
+
+additionalProperties: false
+
+examples:
+  - |
+    qcom,cnss-qcn9224@a0000000 {
+       compatible  = "qcom,cnss-qcn9224";
+       reg-names = "smmu_iova_ipa";
+       memory-region = <&mlo_global_mem0>;
+       qcom,wlan-ramdump-dynamic = <0x600000>;
+       node_id = <0x0>;
+       qca,auto-restart;
+       interrupt-bmap = <0x100503>;
+       board_id = <0x02>;
+       probe-order = <0x2>;
+       qcom,wlan-rc-num = <0x0>;
+       status = "ok";
+    };

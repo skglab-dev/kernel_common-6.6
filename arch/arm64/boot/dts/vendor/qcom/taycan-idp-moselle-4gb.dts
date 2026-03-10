@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+/dts-v1/;
+
+#include "taycan-4gb.dtsi"
+#include "taycan-idp-moselle-4gb.dtsi"
+
+/ {
+	model = "Qualcomm Technologies, Inc. Taycan Moselle 4GB IDP";
+	compatible = "qcom,taycan-idp", "qcom,taycan", "qcom,idp";
+	qcom,board-id = <0x10022 0x603>;
+};
+
+&pcie0 {
+
+	qcom,config-recovery;
+	qcom,drv-supported;
+
+};
+

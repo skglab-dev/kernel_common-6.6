@@ -1,0 +1,27 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) 2024-2025 Qualcomm Innovation Center, Inc. All rights reserved.
+ */
+
+&pcie0 {
+	status = "ok";
+};
+
+&pcie_ep {
+	status = "disabled";
+};
+
+&mhi_dev_qrtr {
+	status = "disabled";
+};
+
+&mhi_device {
+	status = "disabled";
+};
+
+&mhi_net_device {
+	status = "disabled";
+};
+
+&soc {
+};
